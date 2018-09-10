@@ -23,6 +23,7 @@ public class Period {
 
 	private long m_endTime;
 
+	//MessageAnalyzer与PeriodTask是1对1的关系
 	private Map<String, List<PeriodTask>> m_tasks;
 
 	@Inject
@@ -67,6 +68,9 @@ public class Period {
 		}
 	}
 
+	//Period将消息插入PeriodTask队列，由分析器(MessageAnalyzer)轮训从队列里面取消息进行具体处理
+	//每一笔消息默认都会发送到所有种类分析器处理，但是同一种类别的分析器下如果有多个MessageAnalyzer实例，
+	//采用domain hash 选出其中一个实例安排处理消息
 	public void distribute(MessageTree tree) {
 		m_serverStateManager.addMessageTotal(tree.getDomain(), 1);
 		boolean success = true;
@@ -86,6 +90,7 @@ public class Period {
 
 			if (enqueue == false) {
 				if (manyTasks) {
+					//如果第一个periodTask队列无法入队，则选择第二个
 					task = tasks.get((index + 1) % length);
 					enqueue = task.enqueue(tree);
 

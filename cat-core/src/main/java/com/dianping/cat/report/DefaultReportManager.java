@@ -49,6 +49,8 @@ public class DefaultReportManager<T> extends ContainerHolder implements ReportMa
 
 	private String m_name;
 
+	//key 为long类型，代表的是当前时间周期的报表，value还是一个Map，
+	// key类型为String，代表的是不同的domain
 	private Map<Long, Map<String, T>> m_reports = new ConcurrentHashMap<Long, Map<String, T>>();
 
 	private Logger m_logger;

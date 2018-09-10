@@ -15,6 +15,7 @@ public interface MessageAnalyzer {
 
 	public void initialize(long startTime, long duration, long extraTime);
 
+	//每种类别分析器具体有多少个实例
 	public int getAnalyzerCount();
 
 	public void setIndex(int index);

@@ -188,6 +188,7 @@ public class TransactionAnalyzer extends AbstractMessageAnalyzer<TransactionRepo
 
 			if (pair.getKey().booleanValue()) {
 				String ip = tree.getIpAddress();
+				//todo ？ 看完消息数再来看
 				TransactionType transactionType = report.findOrCreateMachine(ip).findOrCreateType(type);
 				TransactionName transactionName = transactionType.findOrCreateName(name);
 				String messageId = tree.getMessageId();

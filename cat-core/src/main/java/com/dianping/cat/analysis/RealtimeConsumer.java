@@ -40,6 +40,7 @@ public class RealtimeConsumer extends ContainerHolder implements MessageConsumer
 	@Override
 	public void consume(MessageTree tree) {
 		long timestamp = tree.getMessage().getTimestamp();
+		//根据消息时间戳，找到对应的周期(Period)，交给Period对消息进行分发
 		Period period = m_periodManager.findPeriod(timestamp);
 
 		if (period != null) {
@@ -117,6 +118,7 @@ public class RealtimeConsumer extends ContainerHolder implements MessageConsumer
 		m_periodManager = new PeriodManager(HOUR, m_analyzerManager, m_serverStateManager, m_logger);
 		m_periodManager.init();
 
+		//周期管理线程
 		Threads.forGroup("cat").start(m_periodManager);
 	}
 

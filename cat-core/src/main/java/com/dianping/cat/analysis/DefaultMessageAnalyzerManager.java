@@ -25,6 +25,8 @@ public class DefaultMessageAnalyzerManager extends ContainerHolder implements Me
 
 	private List<String> m_analyzerNames;
 
+	//key:startTime对应的周期(key类型是String，是分析器的名字，代表一类分析器，
+	// value是MessageAnalyzer列表，同一类分析器，至少有一个MessageAnalyzer实例，对于复杂耗时的分析任务，我们通常会开启更多的实例处理。)
 	private Map<Long, Map<String, List<MessageAnalyzer>>> m_analyzers = new HashMap<Long, Map<String, List<MessageAnalyzer>>>();
 
 	protected Logger m_logger;
@@ -33,6 +35,7 @@ public class DefaultMessageAnalyzerManager extends ContainerHolder implements Me
 	public List<MessageAnalyzer> getAnalyzer(String name, long startTime) {
 		// remove last two hour analyzer
 		try {
+			//会清理2小时之前的分析
 			Map<String, List<MessageAnalyzer>> temp = m_analyzers.remove(startTime - m_duration * 2);
 
 			if (temp != null) {
@@ -49,6 +52,7 @@ public class DefaultMessageAnalyzerManager extends ContainerHolder implements Me
 		Map<String, List<MessageAnalyzer>> map = m_analyzers.get(startTime);
 
 		if (map == null) {
+			//创建的过程函数会通过synchronized给map上锁，以保证创建过程map同时只能被一个线程访问，保证了线程安全
 			synchronized (m_analyzers) {
 				map = m_analyzers.get(startTime);
 

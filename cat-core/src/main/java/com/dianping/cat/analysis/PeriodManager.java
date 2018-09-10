@@ -48,6 +48,8 @@ public class PeriodManager implements Task {
 
 			if (period.isIn(startTime)) {
 				period.finish();
+				//调用PeriodManager的endPeriod(long startTime)方法完成周期的清理工作，
+				//然后将period从m_periods列表移除出去
 				m_periods.remove(i);
 				break;
 			}
@@ -75,6 +77,8 @@ public class PeriodManager implements Task {
 		startPeriod(startTime);
 	}
 
+	//每隔1秒钟会计算是否需要开启一个新的周期，value>0就开启新的周期，
+	// value=0啥也不干，value<0的异步开启一个新线程结束上一个周期
 	@Override
 	public void run() {
 		while (m_active) {
@@ -83,8 +87,12 @@ public class PeriodManager implements Task {
 				long value = m_strategy.next(now);
 
 				if (value > 0) {
+					//value>0就开启新的周期
 					startPeriod(value);
 				} else if (value < 0) {
+					//value<0的异步开启一个新线程结束上一个周期。
+					//结束线程调用PeriodManager的endPeriod(long startTime)方法完成周期的清理工作，
+					// 然后将period从m_periods列表移除出去
 					// last period is over,make it asynchronous
 					Threads.forGroup("cat").start(new EndTaskThread(-value));
 				}
@@ -93,6 +101,7 @@ public class PeriodManager implements Task {
 			}
 
 			try {
+				//每隔1秒钟会计算是否需要开启一个新的周期
 				Thread.sleep(1000L);
 			} catch (InterruptedException e) {
 				break;

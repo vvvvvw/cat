@@ -36,6 +36,7 @@ public abstract class AbstractMessageAnalyzer<R> extends ContainerHolder impleme
 
 	@Override
 	public void analyze(MessageQueue queue) {
+		//分析器处在激活状态，并且本周期未结束
 		while (!isTimeout() && isActive()) {
 			MessageTree tree = queue.poll();
 
@@ -115,6 +116,7 @@ public abstract class AbstractMessageAnalyzer<R> extends ContainerHolder impleme
 		}
 	}
 
+	//当前时间比周期时间+延迟结束时间更晚
 	protected boolean isTimeout() {
 		long currentTime = System.currentTimeMillis();
 		long endTime = m_startTime + m_duration + m_extraTime;
